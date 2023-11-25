@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:santas/empty_app_bar.dart';
-import 'package:santas/home_page.dart';
+import './home_page.dart';
 
 void main() {
   runApp(const MainApp());
