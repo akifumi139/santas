@@ -25,7 +25,11 @@ class HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      initialIndex: 1,
+      vsync: this,
+    );
     _tabController.addListener(() {
       updateSelectedDate();
     });
