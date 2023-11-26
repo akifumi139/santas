@@ -109,6 +109,18 @@ class HomePageState extends State<HomePage>
         .findAll();
   }
 
+  Future<void> updateStatus(int id) async {
+    await widget.isar.writeTxn(() async {
+      final task = await widget.isar.tasks.get(id);
+
+      if (task != null) {
+        task.isCompleted = !task.isCompleted;
+        await widget.isar.tasks.put(task);
+      }
+    });
+    loadTasks();
+  }
+
   Future<void> deleteTask(int id) async {
     await widget.isar.writeTxn(() async {
       await widget.isar.tasks.delete(id);
@@ -178,16 +190,19 @@ class HomePageState extends State<HomePage>
                 TaskList(
                   tasks: yesterdayTaskList,
                   dateType: DateType.yesterday,
+                  onUpdateStatus: updateStatus,
                   onDeleteTask: deleteTask,
                 ),
                 TaskList(
                   tasks: todayTaskList,
                   dateType: DateType.today,
+                  onUpdateStatus: updateStatus,
                   onDeleteTask: deleteTask,
                 ),
                 TaskList(
                   tasks: tomorrowTaskList,
                   dateType: DateType.tomorrow,
+                  onUpdateStatus: updateStatus,
                   onDeleteTask: deleteTask,
                 ),
               ],

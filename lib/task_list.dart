@@ -3,14 +3,17 @@ import './models/task.dart';
 import './date_type.dart';
 
 class TaskList extends StatelessWidget {
-  const TaskList(
-      {super.key,
-      required this.tasks,
-      required this.dateType,
-      required this.onDeleteTask});
+  const TaskList({
+    super.key,
+    required this.tasks,
+    required this.dateType,
+    required this.onUpdateStatus,
+    required this.onDeleteTask,
+  });
   final List<Task> tasks;
 
   final DateType dateType;
+  final Function(int) onUpdateStatus;
   final Function(int) onDeleteTask;
 
   @override
@@ -21,6 +24,31 @@ class TaskList extends StatelessWidget {
         return Container(
           margin: const EdgeInsets.all(8),
           child: ListTile(
+            leading: dateType == DateType.today
+                ? GestureDetector(
+                    onTap: () async {
+                      await onUpdateStatus(tasks[index].id);
+                    },
+                    child: CircleAvatar(
+                      child: Icon(
+                        tasks[index].isCompleted
+                            ? Icons.check
+                            : Icons.check_box_outline_blank,
+                        size: 30,
+                      ),
+                    ),
+                  )
+                : dateType == DateType.yesterday
+                    ? CircleAvatar(
+                        backgroundColor: Colors.black38,
+                        child: Icon(
+                          tasks[index].isCompleted
+                              ? Icons.check
+                              : Icons.check_box_outline_blank,
+                          size: 30,
+                        ),
+                      )
+                    : null,
             tileColor: dateType == DateType.today
                 ? Colors.lightGreen.shade50
                 : dateType == DateType.tomorrow
