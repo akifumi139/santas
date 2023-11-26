@@ -80,6 +80,10 @@ class _AddTaskState extends State<AddTask> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FilledButton.icon(
         onPressed: () async {
+          if (titleController.text == '') {
+            return;
+          }
+
           final currentDate = widget.dateType == DateType.today
               ? DateTime.now()
               : DateTime.now().add(const Duration(days: 1));
