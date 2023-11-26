@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import './models/task.dart';
 import './home_page.dart';
 
-void main() {
-  runApp(const MainApp());
+import 'package:path_provider/path_provider.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final dir = await getApplicationDocumentsDirectory();
+  final isar = await Isar.open(
+    [TaskSchema],
+    directory: dir.path,
+  );
+
+  runApp(MainApp(isar: isar));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
+  const MainApp({super.key, required this.isar});
+  final Isar isar;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +31,7 @@ class MainApp extends StatelessWidget {
             accentColor: Colors.white,
           ),
           scaffoldBackgroundColor: Colors.white),
-      home: const HomePage(),
+      home: HomePage(isar: isar),
     );
   }
 }

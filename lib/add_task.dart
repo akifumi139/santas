@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:isar/isar.dart';
+import './models/task.dart';
 import './date_type.dart';
 
 class AddTask extends StatefulWidget {
-  const AddTask({super.key, required this.dateType});
+  const AddTask({super.key, required this.isar, required this.dateType});
+  final Isar isar;
   final DateType dateType;
 
   @override
@@ -76,7 +79,25 @@ class _AddTaskState extends State<AddTask> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FilledButton.icon(
-        onPressed: () {
+        onPressed: () async {
+          final currentDate = widget.dateType == DateType.today
+              ? DateTime.now()
+              : DateTime.now().add(const Duration(days: 1));
+
+          final DateTime runDate =
+              DateTime(currentDate.year, currentDate.month, currentDate.day);
+
+          final task = Task()
+            ..name = titleController.text
+            ..description = descriptionController.text
+            ..runDate = runDate
+            ..createAt = DateTime.now();
+
+          await widget.isar.writeTxn(() async {
+            await widget.isar.tasks.put(task);
+          });
+
+          if (!mounted) return;
           Navigator.of(context).pop();
         },
         style: OutlinedButton.styleFrom(

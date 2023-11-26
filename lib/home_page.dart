@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
+import './models/task.dart';
 import './task_list.dart';
 import './date_type.dart';
 import './add_task.dart';
 import './empty_app_bar.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key, required this.isar});
+  final Isar isar;
 
   @override
   HomePageState createState() => HomePageState();
@@ -20,6 +23,10 @@ class HomePageState extends State<HomePage>
   late DateTime selectedDate;
   late DateType tabStatus;
 
+  List<Task> todayTaskList = [];
+  List<Task> yesterdayTaskList = [];
+  List<Task> tomorrowTaskList = [];
+
   @override
   void initState() {
     _tabController = TabController(
@@ -27,31 +34,79 @@ class HomePageState extends State<HomePage>
       initialIndex: 1,
       vsync: this,
     );
+
+    initLoad();
     _tabController.addListener(() {
-      updateSelectedDate();
+      loadTasks();
     });
-    selectedDate = DateTime.now();
-    tabStatus = DateType.today;
+
     super.initState();
   }
 
-  void updateSelectedDate() {
+  Future<void> initLoad() async {
+    final DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
+    final DateTime today = DateTime.now();
+    final DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+
+    tabStatus = DateType.today;
+    selectedDate = DateTime(today.year, today.month, today.day);
+
+    final tasksList = [
+      await getTaskList(yesterday),
+      await getTaskList(today),
+      await getTaskList(tomorrow)
+    ];
+
+    setState(() {
+      yesterdayTaskList = tasksList[0];
+      todayTaskList = tasksList[1];
+      tomorrowTaskList = tasksList[2];
+    });
+  }
+
+  Future<void> loadTasks() async {
     switch (_tabController.index) {
       case 0:
-        selectedDate = DateTime.now().subtract(const Duration(days: 1));
         tabStatus = DateType.yesterday;
+
+        final DateTime yesterday =
+            DateTime.now().subtract(const Duration(days: 1));
+
+        final tasks = await getTaskList(yesterday);
+        setState(() {
+          selectedDate =
+              DateTime(yesterday.year, yesterday.month, yesterday.day);
+          yesterdayTaskList = tasks;
+        });
         break;
       case 1:
-        selectedDate = DateTime.now();
         tabStatus = DateType.today;
-
+        final DateTime today = DateTime.now();
+        final tasks = await getTaskList(today);
+        setState(() {
+          selectedDate = DateTime(today.year, today.month, today.day);
+          todayTaskList = tasks;
+        });
         break;
       case 2:
-        selectedDate = DateTime.now().add(const Duration(days: 1));
+        tabStatus = DateType.tomorrow;
+        final DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+        final tasks = await getTaskList(tomorrow);
+        setState(() {
+          selectedDate = DateTime(tomorrow.year, tomorrow.month, tomorrow.day);
+          tomorrowTaskList = tasks;
+        });
         tabStatus = DateType.tomorrow;
         break;
     }
-    setState(() {});
+  }
+
+  Future<List<Task>> getTaskList(DateTime date) async {
+    return await widget.isar.tasks
+        .where()
+        .filter()
+        .runDateEqualTo(DateTime(date.year, date.month, date.day))
+        .findAll();
   }
 
   @override
@@ -112,21 +167,18 @@ class HomePageState extends State<HomePage>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [
-                Center(
-                  child: TaskList(
-                    dateType: DateType.yesterday,
-                  ),
+              children: [
+                TaskList(
+                  tasks: yesterdayTaskList,
+                  dateType: DateType.yesterday,
                 ),
-                Center(
-                  child: TaskList(
-                    dateType: DateType.today,
-                  ),
+                TaskList(
+                  tasks: todayTaskList,
+                  dateType: DateType.today,
                 ),
-                Center(
-                  child: TaskList(
-                    dateType: DateType.tomorrow,
-                  ),
+                TaskList(
+                  tasks: tomorrowTaskList,
+                  dateType: DateType.tomorrow,
                 ),
               ],
             ),
@@ -145,10 +197,13 @@ class HomePageState extends State<HomePage>
                     context,
                     MaterialPageRoute(
                       builder: (context) => AddTask(
+                        isar: widget.isar,
                         dateType: tabStatus,
                       ),
                     ),
-                  );
+                  ).then((value) async {
+                    await loadTasks();
+                  });
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
