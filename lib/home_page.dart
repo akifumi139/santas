@@ -109,6 +109,13 @@ class HomePageState extends State<HomePage>
         .findAll();
   }
 
+  Future<void> deleteTask(int id) async {
+    await widget.isar.writeTxn(() async {
+      await widget.isar.tasks.delete(id);
+    });
+    loadTasks();
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -171,14 +178,17 @@ class HomePageState extends State<HomePage>
                 TaskList(
                   tasks: yesterdayTaskList,
                   dateType: DateType.yesterday,
+                  onDeleteTask: deleteTask,
                 ),
                 TaskList(
                   tasks: todayTaskList,
                   dateType: DateType.today,
+                  onDeleteTask: deleteTask,
                 ),
                 TaskList(
                   tasks: tomorrowTaskList,
                   dateType: DateType.tomorrow,
+                  onDeleteTask: deleteTask,
                 ),
               ],
             ),
