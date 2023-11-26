@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import './date_type.dart';
+import './add_task.dart';
 import './empty_app_bar.dart';
-
-enum DateType {
-  yesterday,
-  today,
-  tomorrow,
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -129,7 +125,16 @@ class HomePageState extends State<HomePage>
         child: tabStatus == DateType.yesterday
             ? null
             : FloatingActionButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTask(
+                        dateType: tabStatus,
+                      ),
+                    ),
+                  );
+                },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),

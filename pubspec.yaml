@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   gap: ^3.0.1
   intl: ^0.18.1
+  material_symbols_icons: ^4.2711.0
 
 dev_dependencies:
   flutter_test:
