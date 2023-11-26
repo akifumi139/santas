@@ -1,3 +1,3 @@
-# santas
+# さんたす
 
-A new Flutter project.
+昨日•今日•明日のタスクだけしか管理できないアプリです。
