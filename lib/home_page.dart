@@ -232,29 +232,29 @@ class HomePageState extends State<HomePage>
       bottomNavigationBar: BottomAppBar(
         color: Colors.lightGreen,
         shape: const CircularNotchedRectangle(),
-        notchMargin: 14,
+        notchMargin: 10,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              margin: const EdgeInsets.only(left: 40.0),
+              margin: const EdgeInsets.only(left: 36.0),
               child: IconButton(
                 icon: const Icon(
                   Icons.directions_run,
                   color: Colors.white,
-                  size: 46.0,
+                  size: 40.0,
                 ),
                 onPressed: () {},
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(right: 40.0),
+              margin: const EdgeInsets.only(right: 36.0),
               child: IconButton(
                 icon: const Icon(
                   Icons.history,
                   color: Colors.white,
-                  size: 46.0,
+                  size: 40.0,
                 ),
                 onPressed: () {},
               ),
