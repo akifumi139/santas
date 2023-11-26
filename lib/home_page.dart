@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import './task_list.dart';
 import './date_type.dart';
 import './add_task.dart';
 import './empty_app_bar.dart';
@@ -107,16 +108,30 @@ class HomePageState extends State<HomePage>
             ),
             unselectedLabelStyle: const TextStyle(fontSize: 20.0),
           ),
+          const Gap(8),
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: const [
-                Center(child: Text("Yesterday's in task")),
-                Center(child: Text("Today's Tasks")),
-                Center(child: Text("Tomorrow's Tasks")),
+                Center(
+                  child: TaskList(
+                    dateType: DateType.yesterday,
+                  ),
+                ),
+                Center(
+                  child: TaskList(
+                    dateType: DateType.today,
+                  ),
+                ),
+                Center(
+                  child: TaskList(
+                    dateType: DateType.tomorrow,
+                  ),
+                ),
               ],
             ),
           ),
+          const Gap(48),
         ],
       ),
       floatingActionButton: SizedBox(
