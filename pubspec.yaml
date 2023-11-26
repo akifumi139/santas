@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter         
   gap: ^3.0.1
   intl: ^0.18.1
   isar: ^3.1.0+1
