@@ -31,10 +31,11 @@ class _AddTaskState extends State<AddTask> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "$statusのタスクを追加する",
+          "$statusのタスク",
           style:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
         leading: IconButton(
           icon: Container(
             margin: const EdgeInsets.only(top: 3),
@@ -47,6 +48,42 @@ class _AddTaskState extends State<AddTask> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              if (titleController.text == '') {
+                return;
+              }
+
+              final currentDate = widget.dateType == DateType.today
+                  ? DateTime.now()
+                  : DateTime.now().add(const Duration(days: 1));
+
+              final DateTime runDate = DateTime(
+                  currentDate.year, currentDate.month, currentDate.day);
+
+              final task = Task()
+                ..name = titleController.text
+                ..description = descriptionController.text
+                ..runDate = runDate
+                ..createAt = DateTime.now();
+
+              await widget.isar.writeTxn(() async {
+                await widget.isar.tasks.put(task);
+              });
+
+              if (!mounted) return;
+              Navigator.of(context).pop();
+            },
+            icon: Container(
+              margin: const EdgeInsets.only(top: 3),
+              child: const Icon(
+                Icons.send,
+                size: 32,
+              ),
+            ),
+          ),
+        ],
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: DateType.today == widget.dateType
             ? const Color(0xFF389764)
@@ -86,61 +123,6 @@ class _AddTaskState extends State<AddTask> {
               ),
               const Gap(40),
             ],
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        child: FilledButton.icon(
-          onPressed: () async {
-            if (titleController.text == '') {
-              return;
-            }
-
-            final currentDate = widget.dateType == DateType.today
-                ? DateTime.now()
-                : DateTime.now().add(const Duration(days: 1));
-
-            final DateTime runDate =
-                DateTime(currentDate.year, currentDate.month, currentDate.day);
-
-            final task = Task()
-              ..name = titleController.text
-              ..description = descriptionController.text
-              ..runDate = runDate
-              ..createAt = DateTime.now();
-
-            await widget.isar.writeTxn(() async {
-              await widget.isar.tasks.put(task);
-            });
-
-            if (!mounted) return;
-            Navigator.of(context).pop();
-          },
-          style: OutlinedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
-            backgroundColor: DateType.today == widget.dateType
-                ? const Color(0xFF389764)
-                : Colors.yellow.shade800,
-          ),
-          icon: const Icon(
-            Icons.note_add_outlined,
-            color: Colors.white,
-            size: 36.0,
-          ),
-          label: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              '追加する',
-              style: TextStyle(
-                fontSize: 26,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
           ),
         ),
       ),
